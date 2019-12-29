@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browse LightShot</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  width: 100vw;
+  height: 100vh;
+  background: black;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button, h2 {
+  position: absolute;
+  top: 5vh;
+  padding: 1rem 2rem;
+  background-color: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 1rem;
+  font-family: Arial;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+button:hover, h2:hover {
+  background-color: rgba(255,255,255,0.2);
+}
+button#back { left: 1rem; }
+button#next { right: 1rem; }
+button#random { top: 90vh; left: 47vw; }
+h2#code { top: 1rem; left: 47vw; }
+img {
+  max-width: 90vw;
+  max-height: 80vh;
+}
+</style>
+</head>
+<body>
+  <a id="codeLink" target="_blank" and rel="noopener noreferrer"><h2 id="code">CODE</h2></a>
+  <button id="random">Random</button>
+  <button id="back">Back</button>
+  <img id="lightshot" src=""/>
+  <button id="next">Next</button>
+  <script>
+    var baseUrl = 'https://prnt.sc/';
+
+    var code = ['1','1','1','1','1','1'];
+    var alpha = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+    var lightshot = document.querySelector('#lightshot');
+    lightshot.addEventListener('load', () => {
+      lightshot.style.opacity = '1';
+    });
+    var codeElem = document.querySelector('#code');
+    var codeLink = document.querySelector('#codeLink');
+    document.querySelector('#next').addEventListener('click', next);
+    document.querySelector('#back').addEventListener('click', back);
+    document.querySelector('#random').addEventListener('click', rand);
+
+    rand();
+
+    function back() {
+      var level = 5;
+      for (;code[level] == '0' && level > -1;level--) { }
+      code[level] = alpha[alpha.indexOf(code[level]) - 1];
+      for (var k = 5; k > level; k--) {
+        code[k] = 'z';
+      }
+      updateCode()
+    }
+
+
+    function next() {
+      var level = 5;
+      for (;code[level] == 'z' && level > -1;level--) { }
+      code[level] = alpha[alpha.indexOf(code[level]) + 1];
+      for (var k = 5; k > level; k--) {
+        code[k] = '0';
+      }
+      updateCode()
+    }
+    
+    function rand() {
+      for (var k = 0; k < 6; k++) {
+        code[k] = alpha[Math.floor(Math.random() * 36)];
+      }
+      updateCode()
+    }
+
+    function updateCode() {
+      var c = code.join('');
+      var u = baseUrl + c;
+      codeLink.href = u;
+      codeElem.innerText = c;
+      lightshot.style.opacity = '0.5';
+      iframeOpen(u);
+    }
+
+    function iframeOpen(url) {
+      console.log(url);
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = handler;
+      xhr.responseType = 'document';
+      xhr.open('GET', url);
+      xhr.send();
+    }
+
+    function handler() {
+      if (this.readyState === this.DONE) {
+        if (this.status === 200) {
+          lightshot.src = this.response.querySelector('.screenshot-image').src;
+        } else {
+          console.error('request failed', this.response);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
