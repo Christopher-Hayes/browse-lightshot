@@ -1,7 +1,7 @@
 # browse-lightshot
 Browse screenshots pubically available on LightShot. It's comparable to changing letters/numbers in your uploaded screenshot to see someone else's. This app just speeds up the process. This project is for educational purposes, don't ever upload anything confidential to LightShot. It should be a given, but just as a heads up, not everything on LightShot is SFW.
 
-### Only works with CORS sameorigin turned off
+### 1) Only works with CORS sameorigin turned off
 
 Run Chrome with CORS off: https://alfilatov.com/posts/run-chrome-without-cors/
 
@@ -11,7 +11,7 @@ Run Chrome with CORS off: https://alfilatov.com/posts/run-chrome-without-cors/
 
 Start Chrome on Win10: `"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --disable-web-security --disable-gpu --user-data-dir=~/chromeTemp`
 
-### Launch a localhost server to open the index.html
+### 2) Launch a localhost server to open the index.html
 
 Use another NPX or Python to accomplish this.
 
