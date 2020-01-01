@@ -25,6 +25,4 @@ This app does not launch the server for you, use NPX or Python to view the index
 
 **Using Python http.server:** 🖥️ `cd browse-lightshot; python -m http.server` then visit `localhost:8000/index.html`
 
-### Screenshot
-
-<img alt="Screenshot of app" src="https://i.imgur.com/fywLIn0.gif">
+<img alt="Screenshot of app" src="https://github.com/Christopher-Hayes/browse-lightshot/raw/master/browse_lightshot.gif">
