@@ -27,4 +27,4 @@ This app does not launch the server for you, use NPX or Python to view the index
 
 ### Screenshot
 
-![Screenshot of app](https://user-images.githubusercontent.com/6013871/71645958-c851f480-2cad-11ea-9a4b-3bc5b5be4cd4.png)
+<img alt="Screenshot of app" src="https://i.imgur.com/fywLIn0.gif">
