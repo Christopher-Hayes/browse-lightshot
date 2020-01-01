@@ -13,7 +13,7 @@ Start Chrome on Win10: `"C:\Program Files (x86)\Google\Chrome\Application\chrome
 
 ### 2) Launch a localhost server to open the index.html
 
-This app does not launch the server for you, use NPX or Python to accomplish view the index.html file.
+This app does not launch the server for you, use NPX or Python to accomplish view the index.html file. `file://` will not work due to CORS errors.
 
 **For example**
 
