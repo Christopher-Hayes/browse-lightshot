@@ -41,6 +41,35 @@ img {
   max-width: 90vw;
   max-height: 80vh;
 }
+#messages {
+  position: absolute;
+  right: 1rem;
+  top: 14vh;
+  width: 5 rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+.m {
+  position: relative;
+  display: block;
+  padding: .6rem;
+  margin: 1rem;
+  background-color: rgba(255,255,255,0.1);
+  color: red;
+  font-family: Verdana;
+  font-size: 0.8rem;
+  animation: appear 500ms cubic-bezier(.17,.67,.21,.99), disappear 500ms cubic-bezier(.17,.67,.21,.99) 2500ms;
+}
+@keyframes appear {
+  from { opacity: 0; transform: translateY(5rem); max-height: 0px; }
+  to { opacity: 1; transform: translateY(0rem); max-height: 36px; }
+}
+@keyframes disappear {
+  from { opacity: 1; transform: translateY(0rem); }
+  to { opacity: 0; transform: translateY(-5rem); }
+}
 </style>
 </head>
 <body>
@@ -49,14 +78,31 @@ img {
   <button id="back">Back</button>
   <img id="lightshot" src=""/>
   <button id="next">Next</button>
+  <div id="messages"></div>
   <script>
     var baseUrl = 'https://prnt.sc/';
 
     var code = ['1','1','1','1','1','1'];
     var alpha = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
     var lightshot = document.querySelector('#lightshot');
+    var imgRetryAttempts = 0;
     lightshot.addEventListener('load', () => {
       lightshot.style.opacity = '1';
+      imgRetryAttempts = 0;
+    });
+    lightshot.addEventListener('error', () => {
+      // console.log('img src failed to load, retrying...');
+      // imgRetryAttempts++;
+      // if (imgRetryAttempts < 3) {
+        // Retry same URL
+        // iframeOpen(lastUrl);
+      // } else {
+        // Try another URL
+        console.log('Giving up, trying another random URL...');
+        message('403');
+        imgRetryAttempts = 0;
+        rand();
+      // }
     });
     var codeElem = document.querySelector('#code');
     var codeLink = document.querySelector('#codeLink');
@@ -66,7 +112,10 @@ img {
 
     rand();
 
+    var cmd = 'rand';
+
     function back() {
+      cmd = 'back';
       var level = 5;
       for (;code[level] == '0' && level > -1;level--) { }
       code[level] = alpha[alpha.indexOf(code[level]) - 1];
@@ -78,6 +127,7 @@ img {
 
 
     function next() {
+      cmd = 'next';
       var level = 5;
       for (;code[level] == 'z' && level > -1;level--) { }
       code[level] = alpha[alpha.indexOf(code[level]) + 1];
@@ -88,6 +138,7 @@ img {
     }
     
     function rand() {
+      cmd = 'rand';
       for (var k = 0; k < 6; k++) {
         code[k] = alpha[Math.floor(Math.random() * 36)];
       }
@@ -103,8 +154,10 @@ img {
       iframeOpen(u);
     }
 
-    function iframeOpen(url) {
+    var lastUrl = '';
+    function iframeOpen(url = lastUrl) {
       console.log(url);
+      lastUrl = url;
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = handler;
       xhr.responseType = 'document';
@@ -116,11 +169,44 @@ img {
       if (this.readyState === this.DONE) {
         if (this.status === 200) {
           lightshot.src = this.response.querySelector('.screenshot-image').src;
+          var data = this.response.querySelector('.under-image img').src;
+          // Screenshot removed
+          if (lightshot.src == 'https://st.prntscr.com/2019/11/26/0154/img/0_173a7b_211be8ff.png' ||
+              data == imgurRemoved) {
+            console.log('"The screenshot was removed" - skipping...');
+            message('Screenshot removed');
+            switch (cmd) {
+              case 'rand':
+                rand(); // setTimeout(rand, 200);
+                break;
+              case 'next':
+                next(); // setTimeout(next, 200);
+                break;
+              case 'back':
+                back(); // setTimeout(back, 200);
+                break;
+            }
+          }
+        } else if (this.status === 403) {
+          console.log('403.. trying again');
+          iframeOpen();
         } else {
           console.error('request failed', this.response);
         }
       }
     }
+
+    function message(s) {
+      var p = document.querySelector('#messages');
+      var m = document.createElement('div');
+      m.classList.add('m');
+      m.innerHTML = s;
+      p.prepend(m);
+      setTimeout(() => {
+        p.removeChild(m);
+      }, 3000);
+    }
+    imgurRemoved = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKEAAABRCAYAAAC6w8avAAAGGklEQVR4Xu2ca47dIAyF263M7H9Js5ZWqYRkWX4cAyZN7umfqr1gm88HQ8jj99fX159f/EMCNxL4TRHeSJ+u/xGgCCmE2wlQhLengAFQhNTA7QQowttTwAAoQmrgdgKhCH9+ftwAv7+/f12/X3+v/tllZzUO9r+HAFwJLaFQPPck7W1et4hwVEyrKspq6lVNLebxb23X8xP5kH28iTSS6sUv/9+K1ervjckTkDcGyWLEgTB9klCXRXgNVsLJEoYmWtv1/ETJlr9ZAkaEgtq/4tP+IhZSJJmPCuMniW/EuizCiui85TsTQ/a7l9CsX/b7sGtVIy26FRFq4VTE/IYtUbsINWC0ElbFLf1UKnMlvky0FfFYwkPHgMT8pIrYLkLk6rmS3ErFqdqN9mvWaUC2jO5ajlE7TxKejPWoCDuW42jft2NPqJfkyl4OFQ86hmwLQBGqjblMnnX1iCYTAR9dAa9eHUciHLF545NXsfLiwhKLF6c1cT/26vipsywSe2VMb7gAqIz3ZFt4OT4Z1C5flUoU+aQAd2XEtvNqEfaio/VdBCjCXSRpZ5oARTiNjh13EXiFCKND4l2gtJ0n7RN3xlqxhbZ9nQi7REcR1sluE6F13zQ7p0LPvKw7DtGZouVX/593F0PGpI9txhleBg05j7TOA1Fe0VmizIPXDuETnVFKuxFHfRds1u+IJa2EOnlecMOgXhqRgV1tKnZ1+2g5juKPYo0qX4XJyri8yVLlFU2uKD6vAKH39bNJXRIh6jSDgwzYErNlVyeo8tAC2tbzEU2Cym/ZuFD/Ve6o3RkRRra9BR2qhFqE2hgq0kyEkd0BerTxfFYqT9a2mqxoNZC2kOUsqsSZ6LKJYFVYLz6EkbfdOFYJK7AyESJP3HiJRqtbtnRXn/7OBIEmwlsB0JVhli2yVEfMovyjY5+qhJXKdwWJCCSbcSjkip3ZPWFWaSpCz+I9LUIr9tnxtIkwWhYlsCE+C3JU+q3lVtuVwpbxVJ/5y/pas3wmdm+5ysaFbgcyO/pCKhpXVjAsYUXLsc6V9n39O62EVqfK/6GzoWKzq+2TYu1icIfdjxahnMHIjL0jQZ/gs12EnwCRY1wjQBGu8WPvDQQowg0QaWKNAEW4xo+9NxBoFeHdV5t3+9+Qn5IJ9MzROqKJbhR0c2wVYYlgQ+NueA0hbzWJjj9rl/2+GjQkwugw0jogHkFFB9XIzPMOWbPD3xn/I9bMp3cgPnxa94UzRlbf7A5Rtc/VHsmjdVQ1m0dUnKkIERjI/dbKUqGFULltJAde6Yf6jNqNRFsPfFQ/f+LxyvIx82BHZUyVPB4TIVLRrOREAc6CjvY6GbxZn1W7M+OOlsPKRFuZoNntPFRwVrvlSoiKMFoOso3yadB60mQC1fGjn//QTPRSKLcI0eN0qEDkcix9VSaStmEt31VBHhWhNxOfLsLKRIwYIEtwNiFml+PKk1GVR+4QQR4TYTbb0OTM2sn6ocmt7J+ybYiu8OhFgax8aEWLfFXGlHFERKfbpCJErqo8x1bAo22leuy04/nP4MpEVeKJ9nOSrXcFbfX3Ypkdg1z20YlgcczG6ukEEuGMut/cZxb2m5msjI0iBOh5G3qgK5sABChCABKb9BKgCHv50jpAgCIEILFJLwGKsJcvrQMEKEIAEpv0EqAIe/nSOkCAIgQgsUkvAYqwly+tAwQoQgASm/QSoAh7+dI6QIAiBCCxSS8BirCXL60DBChCABKb9BKgCHv50jpAgCIEILFJLwGKsJcvrQMEKEIAEpv0EkhFyEfZexNA6wc+F0zIJJARKFdC+b7FeEPscpK9nB29UzuCtL7jYv2mYxhtkNgyIPz9PIEpEVpv/MvXBq0XqZEXu+Xw0fb6fdootvN46REh8BgRymqHfGXAEycChW3OEniMCLNKe2FDquJZvPSGENguwiEG6Vx/tkLu87LPb1T3hFyOkbT/X21SEVbDzT5FUbXH9u8nsF2EuhLu/oLT+1PyeSNsEeHnYeSIVwhQhCv02HcLAYpwC0YaWSFAEa7QY98tBCjCLRhpZIUARbhCj323EKAIt2CkkRUCFOEKPfbdQuAv8TXYv1YHyV0AAAAASUVORK5CYII=';
   </script>
 </body>
 </html>
