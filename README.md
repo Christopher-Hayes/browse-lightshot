@@ -1,5 +1,9 @@
 # browse-lightshot
-Browse screenshots pubically available on LightShot. It's comparable to changing letters/numbers in your uploaded screenshot to see someone else's. This app just speeds up the process. This project is for educational purposes, don't ever upload anything confidential to LightShot. It should be a given, but just as a heads up, not everything on LightShot is SFW.
+Browse screenshots pubically available on LightShot. It's comparable to changing letters/numbers in your uploaded screenshot to see someone else's. This app just speeds up the process.
+
+**Educational Purposes:** This project is for educational purposes ONLY, please do not misuse this tool. This tool is designed to show why one should never upload anything confidential to LightShot.
+
+**Warning:** Not everything uploaded to LigthShot is SFW.
 
 ### 1) Only works with CORS sameorigin turned off
 
