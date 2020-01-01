@@ -3,7 +3,7 @@
 
 ✏️ **Educational Purposes:** This project is for educational purposes ONLY, please do not misuse this tool. This tool is designed to show why one should never upload anything confidential to LightShot.
 
-⚠️ **Warning:** Not everything uploaded to LigthShot is SFW.
+⚠️ **Warning:** Not everything uploaded to LigthShot is SFW. Browse carefully..
 
 ### 1️) Start Chrome with CORS off
 
